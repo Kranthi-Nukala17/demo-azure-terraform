@@ -7,9 +7,7 @@ terraform {
     container_name       = "tfstate"
     key                  = "storage.terraform.tfstate"
 
-    # Authenticate with the Azure identity established by azure/login.
-    # Azure CLI authentication does not support a service principal here.
-    use_cli          = false
+    # Authenticate using the ARM_* service-principal environment variables.
     use_azuread_auth = true
   }
 
