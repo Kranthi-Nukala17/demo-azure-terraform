@@ -1,2 +1,2 @@
 # Choose a globally unique name before applying.
-storage_account_name = "aksdevstg0012504"
+storage_account_name = "aksdevstg001250412"
