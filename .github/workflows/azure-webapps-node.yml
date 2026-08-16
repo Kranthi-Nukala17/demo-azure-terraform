@@ -12,13 +12,6 @@ jobs:
   terraform:
     # Preserve the existing GitHub-hosted runner.
     runs-on: ubuntu-latest
-    env:
-      # AzureRM authenticates as the service principal, rather than as an Azure CLI user.
-      ARM_CLIENT_ID: ${{ fromJSON(secrets.AZURE_CREDENTIALS).clientId }}
-      ARM_CLIENT_SECRET: ${{ fromJSON(secrets.AZURE_CREDENTIALS).clientSecret }}
-      ARM_SUBSCRIPTION_ID: ${{ fromJSON(secrets.AZURE_CREDENTIALS).subscriptionId }}
-      ARM_TENANT_ID: ${{ fromJSON(secrets.AZURE_CREDENTIALS).tenantId }}
-      ARM_USE_CLI: false
 
     steps:
       - name: Check out repository
@@ -29,6 +22,19 @@ jobs:
         with:
           # Repository secret containing Azure service-principal credentials as JSON.
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Export service-principal credentials for Terraform
+        env:
+          AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "ARM_CLIENT_ID=$(jq -er '.clientId' <<< "$AZURE_CREDENTIALS")" >> "$GITHUB_ENV"
+          echo "ARM_CLIENT_SECRET=$(jq -er '.clientSecret' <<< "$AZURE_CREDENTIALS")" >> "$GITHUB_ENV"
+          echo "ARM_SUBSCRIPTION_ID=$(jq -er '.subscriptionId' <<< "$AZURE_CREDENTIALS")" >> "$GITHUB_ENV"
+          echo "ARM_TENANT_ID=$(jq -er '.tenantId' <<< "$AZURE_CREDENTIALS")" >> "$GITHUB_ENV"
+          echo "ARM_USE_CLI=false" >> "$GITHUB_ENV"
+          echo "ARM_USE_AZUREAD=true" >> "$GITHUB_ENV"
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
