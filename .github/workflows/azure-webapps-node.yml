@@ -12,6 +12,13 @@ jobs:
   terraform:
     # Preserve the existing GitHub-hosted runner.
     runs-on: ubuntu-latest
+    env:
+      # AzureRM authenticates as the service principal, rather than as an Azure CLI user.
+      ARM_CLIENT_ID: ${{ fromJSON(secrets.AZURE_CREDENTIALS).clientId }}
+      ARM_CLIENT_SECRET: ${{ fromJSON(secrets.AZURE_CREDENTIALS).clientSecret }}
+      ARM_SUBSCRIPTION_ID: ${{ fromJSON(secrets.AZURE_CREDENTIALS).subscriptionId }}
+      ARM_TENANT_ID: ${{ fromJSON(secrets.AZURE_CREDENTIALS).tenantId }}
+      ARM_USE_CLI: false
 
     steps:
       - name: Check out repository

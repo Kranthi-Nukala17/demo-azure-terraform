@@ -8,6 +8,8 @@ terraform {
     key                  = "storage.terraform.tfstate"
 
     # Authenticate with the Azure identity established by azure/login.
+    # Azure CLI authentication does not support a service principal here.
+    use_cli          = false
     use_azuread_auth = true
   }
 
