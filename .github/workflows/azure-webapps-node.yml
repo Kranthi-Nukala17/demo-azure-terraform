@@ -28,6 +28,13 @@ jobs:
         with:
           terraform_version: "1.9.8"
 
+      - name: Ensure Terraform state container exists
+        run: |
+          az storage container create \
+            --account-name aksdevstg0012504 \
+            --name tfstate \
+            --auth-mode login
+
       - name: Initialize Terraform
         run: terraform init -input=false
 
