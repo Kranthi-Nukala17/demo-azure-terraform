@@ -3,6 +3,8 @@ name: Provision Azure Storage
 on:
   push:
     branches: ["main"]
+  pull_request:
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:
@@ -41,6 +43,7 @@ jobs:
           terraform_version: "1.9.8"
 
       - name: Ensure Terraform state container exists
+        if: github.event_name != 'pull_request'
         run: |
           az storage container create \
             --account-name aksdevstg0012504 \
@@ -57,4 +60,5 @@ jobs:
         run: terraform plan -input=false -out=tfplan
 
       - name: Create or update storage account
+        if: github.event_name != 'pull_request'
         run: terraform apply -input=false -auto-approve tfplan
